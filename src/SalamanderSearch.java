@@ -44,6 +44,71 @@ public class SalamanderSearch {
      * @throws IllegalArgumentException if the enclosure does not contain a salamander
      */
     public static boolean canReach(char[][] enclosure) {
+        boolean[][] visited = new boolean[enclosure.length][enclosure[0].length];
+        return canReach(enclosure, salamanderLocation(enclosure), visited);
+    }
+    public static boolean canReach(char[][] enclosure, int[] loc, boolean[][] seen) {
+        int curR = loc[0];
+        int curC = loc[1];
+        if(enclosure[curR][curC] == 'f')return true;
+        if(seen[curR][curC]) return false;
+
+        seen[curR][curC] = true;
+
+        List<int[]> validLocs = possibleMoves(enclosure, loc);
+        for(int[] move: validLocs){
+            if(canReach(enclosure, move, seen)){
+                return true;
+            }
+        }
         return false;
+    }
+
+    public static List<int[]> possibleMoves(char[][] enclosure, int[] location){
+        int curR = location[0];
+        int curC = location[1];
+
+        List<int[]> validLocs = new ArrayList<>();
+
+
+        //up
+        int newR = curR-1;
+        int newC = curC;
+        if(newR >= 0 && enclosure[newR][newC] != 'W'){
+            validLocs.add(new int[]{newR, newC});
+        }
+        //down
+        newR = curR+1;
+        newC = curC;
+        if(newR < enclosure.length && enclosure[newR][newC] != 'W'){
+            validLocs.add(new int[]{newR, newC});
+        }
+        //right
+        newR = curR;
+        newC = curC+1;
+        if(newC < enclosure[0].length && enclosure[newR][newC] != 'W'){
+            validLocs.add(new int[]{newR, newC});
+        }
+        //left
+        newR = curR;
+        newC = curC-1;
+        if(newC >= 0 && enclosure[newR][newC] != 'W'){
+            validLocs.add(new int[]{newR, newC});
+        }
+        return validLocs;
+    }
+
+    public static int[] salamanderLocation(char[][] enclosure){
+        int count = 0;
+        for (char[] arr : enclosure) {
+            for(int i = 0 ; i < arr.length; i++){
+                if(arr[i] == 's'){
+                    return new int[]{count, i};
+                }
+            }
+            count++;
+        }
+
+        throw new IllegalArgumentException("No salamander present");
     }
 }
